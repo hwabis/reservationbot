@@ -14,6 +14,10 @@ class MyClient(discord.Client):
     queue = {}
     async def on_message(self, message):
         # we do not want the bot to reply to itself
+        async def show_queue():
+            for key in self.queue:
+                await message.channel.send(str(key) + ': ' + str(self.queue[key]))
+                
         if message.author.id == self.user.id:
             return
 
@@ -42,7 +46,9 @@ class MyClient(discord.Client):
             await message.channel.send('Successfully reserved.')
             
         if message.content.startswith('#remove'):
-            await message.channel.send('Enter valid room number:')
+            await message.channel.send('Here are all current reservations: ')
+            await show_queue()
+            await message.channel.send('Enter room number to remove:')
             def queue_remove(m):
                 return m.author == message.author and m.content.isdigit() and int(m.content) in self.queue
             try:
@@ -54,12 +60,12 @@ class MyClient(discord.Client):
             else:
                 await message.channel.send('Enter the entry number (1 to ' + str(len(self.queue[int(room.content)])) + '):')
                 def is_valid_remove(m):
-                    return m.author == message.author and m.content.isdigit() and int(m.content) >= 1 and int(m.content) < len(self.queue[int(room.content)])
+                    return m.author == message.author and m.content.isdigit() and int(m.content) >= 1 and int(m.content) <= len(self.queue[int(room.content)])
                 try:
                     number = await self.wait_for('message', check=is_valid_remove, timeout=self.t)
                 except asyncio.TimeoutError:
                     return await message.channel.send('Removal cancelled.')
-                del self.queue[int(room.content)][int(number.content)]
+                del self.queue[int(room.content)][int(number.content) - 1]
             await message.channel.send('Successfully removed.')
             
         if message.content.startswith('#help'):
@@ -67,8 +73,7 @@ class MyClient(discord.Client):
 
         if message.content.startswith('#queue'):
             await message.channel.send('Current reservations: ')
-            for key in self.queue:
-                await message.channel.send(str(key) + ': ' + str(self.queue[key]))
+            await show_queue()
 
         if message.content.startswith('#clear'):
             await message.channel.send('Are you sure you want to clear? y/n')
@@ -83,6 +88,7 @@ class MyClient(discord.Client):
                 await message.channel.send('Queue cleared.')
             else:
                 await message.channel.send('Clearing cancelled.')
+
     
 client = MyClient()
-client.run('ODAxMjA2OTMwMjY5NjY3Mzk5.YAdUGQ.3H4YMRa35ZzMuDOOdDC_xBKL03Q')
+client.run('ODAxMjA2OTMwMjY5NjY3Mzk5.YAdUGQ.m9M7JxTQmFog66x7Hmk0LGRsIjk')
