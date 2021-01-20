@@ -1,6 +1,7 @@
 import discord
 import asyncio
 from datetime import date
+import json
 
 class MyClient(discord.Client):
     async def on_ready(self):
@@ -91,4 +92,7 @@ class MyClient(discord.Client):
 
     
 client = MyClient()
-client.run('ODAxMjA2OTMwMjY5NjY3Mzk5.YAdUGQ.m9M7JxTQmFog66x7Hmk0LGRsIjk')
+f = open('config.json')
+data = json.load(f)
+token = data['token']
+client.run(token)
