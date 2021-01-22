@@ -57,7 +57,7 @@ class MyClient(discord.Client):
             except asyncio.TimeoutError:
                 return await message.channel.send('Removal cancelled.')
             if len(self.queue[int(room.content)]) == 1:
-                self.queue = {}
+                self.queue.pop(int(room.content))
             else:
                 await message.channel.send('Enter the entry number (1 to ' + str(len(self.queue[int(room.content)])) + '):')
                 def is_valid_remove(m):
